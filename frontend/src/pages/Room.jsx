@@ -123,65 +123,65 @@ function Room({ socket, userData, users }) {
     console.log(offsetX, offsetY);
     setIsDrawing(false);
   };
-  // const handleMouseMove = (e) => {
-  //   if (!isDrawing) return;
-
-  //   const { offsetX, offsetY } = e.nativeEvent;
-
-  //   setElements((prev) => {
-  //     const newElements = prev.map((el, index) => {
-  //       if (index === prev.length - 1 && el.type === "pencil") {
-  //         const updated = {
-  //           ...el,
-  //           path: [...el.path, [offsetX, offsetY]],
-  //         };
-
-  //         // Emit this stroke to others
-  //         socket.emit("draw-stroke", updated);
-
-  //         return updated;
-  //       }
-  //       return el;
-  //     });
-
-  //     return newElements;
-  //   });
-  // };
-
-  // code for better drowing
-
   const handleMouseMove = (e) => {
     if (!isDrawing) return;
 
     const { offsetX, offsetY } = e.nativeEvent;
 
     setElements((prev) => {
-      const updatedElements = [...prev];
-      const lastIndex = updatedElements.length - 1;
-      const lastElement = updatedElements[lastIndex];
+      const newElements = prev.map((el, index) => {
+        if (index === prev.length - 1 && el.type === "pencil") {
+          const updated = {
+            ...el,
+            path: [...el.path, [offsetX, offsetY]],
+          };
 
-      if (!lastElement) return prev;
+          // Emit this stroke to others
+          socket.emit("draw-stroke", updated);
 
-      if (lastElement.type === "pencil") {
-        const updated = {
-          ...lastElement,
-          path: [...lastElement.path, [offsetX, offsetY]],
-        };
-        updatedElements[lastIndex] = updated;
-        socket.emit("draw-stroke", updated);
-      } else if (lastElement.type === "line") {
-        const updated = {
-          ...lastElement,
-          width: offsetX,
-          height: offsetY,
-        };
-        updatedElements[lastIndex] = updated;
-        socket.emit("draw-stroke", updated);
-      }
+          return updated;
+        }
+        return el;
+      });
 
-      return updatedElements;
+      return newElements;
     });
   };
+
+  // code for better drowing
+
+  // const handleMouseMove = (e) => {
+  //   if (!isDrawing) return;
+
+  //   const { offsetX, offsetY } = e.nativeEvent;
+
+  //   setElements((prev) => {
+  //     const updatedElements = [...prev];
+  //     const lastIndex = updatedElements.length - 1;
+  //     const lastElement = updatedElements[lastIndex];
+
+  //     if (!lastElement) return prev;
+
+  //     if (lastElement.type === "pencil") {
+  //       const updated = {
+  //         ...lastElement,
+  //         path: [...lastElement.path, [offsetX, offsetY]],
+  //       };
+  //       updatedElements[lastIndex] = updated;
+  //       socket.emit("draw-stroke", updated);
+  //     } else if (lastElement.type === "line") {
+  //       const updated = {
+  //         ...lastElement,
+  //         width: offsetX,
+  //         height: offsetY,
+  //       };
+  //       updatedElements[lastIndex] = updated;
+  //       socket.emit("draw-stroke", updated);
+  //     }
+
+  //     return updatedElements;
+  //   });
+  // };
 
   useEffect(() => {
     // if (userData.host) return; // only viewers listen
